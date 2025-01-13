@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Camera, X } from 'lucide-react';
+import { X, Plus } from 'lucide-react';
 import Image from 'next/image';
 
 interface Vehicle {
@@ -11,6 +11,22 @@ interface Vehicle {
   model: string;
 }
 
+interface PhotoFile {
+  id: string;
+  file: File;
+  previewUrl: string;
+  angle: VehicleAngle;
+}
+
+type VehicleAngle = 'front-right' | 'front-left' | 'rear-right' | 'rear-left';
+
+const VEHICLE_ANGLES: { id: VehicleAngle; label: string }[] = [
+  { id: 'front-right', label: 'Front Right' },
+  { id: 'front-left', label: 'Front Left' },
+  { id: 'rear-right', label: 'Rear Right' },
+  { id: 'rear-left', label: 'Rear Left' },
+];
+
 const SAMPLE_VEHICLES: Vehicle[] = [
   { id: '1', licensePlate: 'ABC 123', make: 'Toyota', model: 'Camry' },
   { id: '2', licensePlate: 'XYZ 789', make: 'Honda', model: 'Civic' },
@@ -19,21 +35,22 @@ const SAMPLE_VEHICLES: Vehicle[] = [
 
 export function VehicleCheckInForm() {
   const [selectedVehicle, setSelectedVehicle] = useState<string>('');
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [photos, setPhotos] = useState<PhotoFile[]>([]);
   const [showCamera, setShowCamera] = useState(false);
+  const [selectedAngle, setSelectedAngle] = useState<VehicleAngle | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const startCamera = async () => {
+  const startCamera = async (angle: VehicleAngle) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' }, // Use back camera if available
+        video: { facingMode: 'environment' },
       });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         streamRef.current = stream;
       }
+      setSelectedAngle(angle);
       setShowCamera(true);
     } catch (err) {
       console.error('Error accessing camera:', err);
@@ -47,10 +64,11 @@ export function VehicleCheckInForm() {
       streamRef.current = null;
     }
     setShowCamera(false);
+    setSelectedAngle(null);
   };
 
   const capturePhoto = () => {
-    if (videoRef.current) {
+    if (videoRef.current && selectedAngle) {
       const canvas = document.createElement('canvas');
       canvas.width = videoRef.current.videoWidth;
       canvas.height = videoRef.current.videoHeight;
@@ -59,9 +77,18 @@ export function VehicleCheckInForm() {
         ctx.drawImage(videoRef.current, 0, 0);
         canvas.toBlob((blob) => {
           if (blob) {
-            const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
-            setImageFile(file);
-            setPreviewUrl(URL.createObjectURL(blob));
+            const file = new File([blob], `${selectedAngle}-${Date.now()}.jpg`, { type: 'image/jpeg' });
+            const newPhoto: PhotoFile = {
+              id: Date.now().toString(),
+              file,
+              previewUrl: URL.createObjectURL(blob),
+              angle: selectedAngle,
+            };
+            setPhotos((prev) => {
+              // Remove existing photo with same angle if it exists
+              const filtered = prev.filter((p) => p.angle !== selectedAngle);
+              return [...filtered, newPhoto];
+            });
             stopCamera();
           }
         }, 'image/jpeg');
@@ -69,24 +96,53 @@ export function VehicleCheckInForm() {
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, angle: VehicleAngle) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
+      const newPhoto: PhotoFile = {
+        id: Date.now().toString() + Math.random(),
+        file,
+        previewUrl: URL.createObjectURL(file),
+        angle,
+      };
+
+      setPhotos((prev) => {
+        // Remove existing photo with same angle if it exists
+        const filtered = prev.filter((p) => p.angle !== angle);
+        return [...filtered, newPhoto];
+      });
     }
+  };
+
+  const removePhoto = (photoId: string) => {
+    setPhotos((prev) => {
+      const updatedPhotos = prev.filter((photo) => photo.id !== photoId);
+      // Revoke the URL to prevent memory leaks
+      const photoToRemove = prev.find((photo) => photo.id === photoId);
+      if (photoToRemove) {
+        URL.revokeObjectURL(photoToRemove.previewUrl);
+      }
+      return updatedPhotos;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (photos.length !== VEHICLE_ANGLES.length) {
+      alert('Please provide photos from all required angles');
+      return;
+    }
     // TODO: Implement form submission
     console.log('Selected Vehicle:', selectedVehicle);
-    console.log('Image File:', imageFile);
+    console.log('Photos:', photos);
+  };
+
+  const getPhotoForAngle = (angle: VehicleAngle) => {
+    return photos.find((photo) => photo.angle === angle);
   };
 
   return (
-    <form onSubmit={handleSubmit} className='max-w-2xl'>
+    <form onSubmit={handleSubmit} className='w-full max-w-2xl mx-auto px-4 sm:px-6'>
       <div className='space-y-8'>
         {/* Vehicle Selection */}
         <div>
@@ -107,77 +163,97 @@ export function VehicleCheckInForm() {
 
         {/* Image Upload */}
         <div>
-          <label className='block text-sm font-medium text-gray-400 mb-2'>Vehicle Image</label>
-          <div className='mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-700 border-dashed rounded-lg bg-black/40'>
-            <div className='space-y-2 text-center w-full'>
-              {showCamera ? (
-                <div className='relative'>
-                  <video ref={videoRef} autoPlay playsInline className='w-full rounded-lg' />
-                  <div className='absolute bottom-4 left-0 right-0 flex justify-center space-x-4'>
-                    <button
-                      type='button'
-                      onClick={capturePhoto}
-                      className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700'
-                    >
-                      Take Photo
-                    </button>
-                    <button
-                      type='button'
-                      onClick={stopCamera}
-                      className='px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700'
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ) : previewUrl ? (
-                <div className='relative w-full h-64'>
-                  <button
-                    type='button'
-                    onClick={() => {
-                      setPreviewUrl(null);
-                      setImageFile(null);
-                    }}
-                    className='absolute top-2 right-2 p-1 bg-gray-800 rounded-full text-gray-400 hover:text-white z-10'
-                  >
-                    <X size={20} />
-                  </button>
-                  <Image src={previewUrl} alt='Vehicle preview' fill className='object-contain rounded-lg' />
-                </div>
-              ) : (
-                <div className='flex flex-col items-center'>
-                  <Camera className='h-12 w-12 text-gray-400' />
-                  <div className='flex flex-col space-y-2 text-sm text-gray-400'>
-                    <div>
-                      <label
-                        htmlFor='file-upload'
-                        className='relative cursor-pointer rounded-md font-medium text-blue-500 hover:text-blue-400 focus-within:outline-none'
+          <div className='flex justify-between items-center mb-4'>
+            <label className='block text-sm font-medium text-gray-400'>Vehicle Images</label>
+            <span className='text-sm text-gray-400'>
+              {photos.length}/{VEHICLE_ANGLES.length} angles
+            </span>
+          </div>
+
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
+            {VEHICLE_ANGLES.map(({ id: angle, label }) => {
+              const photo = getPhotoForAngle(angle);
+              return (
+                <div key={angle} className='relative aspect-square'>
+                  {photo ? (
+                    // Show captured photo
+                    <div className='relative h-full'>
+                      <Image src={photo.previewUrl} alt={`Vehicle ${label}`} fill className='object-cover rounded-lg' />
+                      <div className='absolute top-2 left-2 bg-black/60 px-3 py-1.5 rounded text-sm text-white font-medium'>
+                        {label}
+                      </div>
+                      <button
+                        type='button'
+                        onClick={() => removePhoto(photo.id)}
+                        className='absolute top-2 right-2 p-2 bg-black/60 rounded-full text-gray-200 hover:text-white transition-colors'
                       >
-                        <span>Upload an image</span>
-                        <input
-                          id='file-upload'
-                          name='file-upload'
-                          type='file'
-                          accept='image/*'
-                          className='sr-only'
-                          onChange={handleImageUpload}
-                        />
-                      </label>
-                      <p className='pl-1'>or drag and drop</p>
+                        <X size={20} />
+                      </button>
                     </div>
-                    <button
-                      type='button'
-                      onClick={startCamera}
-                      className='inline-flex items-center space-x-2 text-blue-500 hover:text-blue-400'
-                    >
-                      <Camera size={16} />
-                      <span>Take a photo</span>
-                    </button>
-                  </div>
-                  <p className='text-xs text-gray-500 mt-2'>PNG, JPG, GIF up to 10MB</p>
+                  ) : showCamera && selectedAngle === angle ? (
+                    // Show camera view
+                    <div className='relative h-full'>
+                      <video
+                        ref={videoRef}
+                        autoPlay
+                        playsInline
+                        className='absolute inset-0 w-full h-full rounded-lg object-cover'
+                      />
+                      <div className='absolute top-2 left-2 bg-black/60 px-3 py-1.5 rounded text-sm text-white font-medium'>
+                        {label}
+                      </div>
+                      <div className='absolute bottom-4 left-0 right-0 flex justify-center space-x-3'>
+                        <button
+                          type='button'
+                          onClick={capturePhoto}
+                          className='px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors'
+                        >
+                          Take Photo
+                        </button>
+                        <button
+                          type='button'
+                          onClick={stopCamera}
+                          className='px-4 py-2 bg-black/60 text-white text-sm font-medium rounded-lg hover:bg-black/70 transition-colors'
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    // Show upload button
+                    <div className='h-full border-2 border-gray-700 border-dashed rounded-lg bg-black/40 flex flex-col items-center justify-center p-6'>
+                      <input
+                        type='file'
+                        id={`file-upload-${angle}`}
+                        accept='image/*'
+                        className='sr-only'
+                        onChange={(e) => handleImageUpload(e, angle)}
+                      />
+                      <div className='absolute top-2 left-2 bg-black/60 px-3 py-1.5 rounded text-sm text-white font-medium'>
+                        {label}
+                      </div>
+                      <Plus className='h-10 w-10 text-gray-400 mb-3' />
+                      <div className='flex flex-col items-center text-sm text-gray-400'>
+                        <label
+                          htmlFor={`file-upload-${angle}`}
+                          className='cursor-pointer text-blue-500 hover:text-blue-400 font-medium'
+                        >
+                          Upload photo
+                        </label>
+                        <span className='my-1.5'>or</span>
+                        <button
+                          type='button'
+                          onClick={() => startCamera(angle)}
+                          className='text-blue-500 hover:text-blue-400 font-medium'
+                        >
+                          Take a photo
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              );
+            })}
           </div>
         </div>
 
@@ -185,10 +261,10 @@ export function VehicleCheckInForm() {
         <div className='flex justify-end'>
           <button
             type='submit'
-            disabled={!selectedVehicle || !imageFile}
-            className='px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+            disabled={!selectedVehicle || photos.length !== VEHICLE_ANGLES.length}
+            className='w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
           >
-            Submit
+            Submit Check-in
           </button>
         </div>
       </div>
