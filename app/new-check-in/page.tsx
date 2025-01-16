@@ -1,4 +1,3 @@
-import { VehicleCheckInForm } from '../components/new-check-in/vehicle-check-in-form';
 import { Sidebar } from '../components/sidebar';
 import { getUser } from '@/server/services/users';
 import { redirect } from 'next/navigation';
@@ -18,7 +17,6 @@ export default async function NewCheckIn() {
       <main className='p-4 lg:ml-64 lg:p-8'>
         <div className='mb-8'>
           <h1 className='text-3xl font-bold text-white mb-6'>Vehicle Check-In</h1>
-          <VehicleCheckInForm user={user} />
         </div>
       </main>
     </div>
