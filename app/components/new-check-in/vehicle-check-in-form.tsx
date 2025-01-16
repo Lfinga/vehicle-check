@@ -1,24 +1,24 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { X, Plus } from 'lucide-react';
 import Image from 'next/image';
+import { uploadPicture } from '@/server/services/pictures';
+import { User } from '@supabase/supabase-js';
+import { Database } from '@/types/supabase';
+import { getVehicles } from '@/app/new-check-in/action';
 
-interface Vehicle {
-  id: string;
-  licensePlate: string;
-  make: string;
-  model: string;
-}
+type Vehicle = Database['public']['Tables']['vehicules']['Row'];
+type VehicleAngle = Database['public']['Enums']['angle'];
 
 interface PhotoFile {
   id: string;
   file: File;
   previewUrl: string;
   angle: VehicleAngle;
+  vehicule_id: number | null;
+  user_id: string;
 }
-
-type VehicleAngle = 'front-right' | 'front-left' | 'rear-right' | 'rear-left';
 
 const VEHICLE_ANGLES: { id: VehicleAngle; label: string }[] = [
   { id: 'front-right', label: 'Front Right' },
@@ -27,19 +27,37 @@ const VEHICLE_ANGLES: { id: VehicleAngle; label: string }[] = [
   { id: 'rear-left', label: 'Rear Left' },
 ];
 
-const SAMPLE_VEHICLES: Vehicle[] = [
-  { id: '1', licensePlate: 'ABC 123', make: 'Toyota', model: 'Camry' },
-  { id: '2', licensePlate: 'XYZ 789', make: 'Honda', model: 'Civic' },
-  { id: '3', licensePlate: 'DEF 456', make: 'Toyota', model: 'Corolla' },
-];
-
-export function VehicleCheckInForm() {
-  const [selectedVehicle, setSelectedVehicle] = useState<string>('');
+export function VehicleCheckInForm({ user }: { user: User | null }) {
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [photos, setPhotos] = useState<PhotoFile[]>([]);
   const [showCamera, setShowCamera] = useState(false);
   const [selectedAngle, setSelectedAngle] = useState<VehicleAngle | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+
+  useEffect(() => {
+    const fetchVehicles = async () => {
+      const result = await getVehicles();
+      console.log('result', result);
+      if (result.vehicles) {
+        setVehicles(result.vehicles);
+      } else {
+        console.error('Failed to fetch vehicles:', result.error);
+      }
+    };
+
+    fetchVehicles();
+  }, []);
+
+  // Add check for user authentication
+  if (!user) {
+    return (
+      <div className='text-center py-8'>
+        <p className='text-red-500 mb-4'>Please log in to perform vehicle check-ins.</p>
+      </div>
+    );
+  }
 
   const startCamera = async (angle: VehicleAngle) => {
     try {
@@ -79,13 +97,14 @@ export function VehicleCheckInForm() {
           if (blob) {
             const file = new File([blob], `${selectedAngle}-${Date.now()}.jpg`, { type: 'image/jpeg' });
             const newPhoto: PhotoFile = {
-              id: Date.now().toString(),
+              id: Date.now().toString() + Math.floor(Math.random() * 1000).toString(),
               file,
               previewUrl: URL.createObjectURL(blob),
               angle: selectedAngle,
+              vehicule_id: selectedVehicle?.id || null,
+              user_id: user?.id || '',
             };
             setPhotos((prev) => {
-              // Remove existing photo with same angle if it exists
               const filtered = prev.filter((p) => p.angle !== selectedAngle);
               return [...filtered, newPhoto];
             });
@@ -100,14 +119,15 @@ export function VehicleCheckInForm() {
     const file = e.target.files?.[0];
     if (file) {
       const newPhoto: PhotoFile = {
-        id: Date.now().toString() + Math.random(),
+        id: Date.now().toString() + Math.floor(Math.random() * 1000).toString(),
         file,
         previewUrl: URL.createObjectURL(file),
         angle,
+        vehicule_id: selectedVehicle?.id || null,
+        user_id: user?.id || '',
       };
 
       setPhotos((prev) => {
-        // Remove existing photo with same angle if it exists
         const filtered = prev.filter((p) => p.angle !== angle);
         return [...filtered, newPhoto];
       });
@@ -128,13 +148,38 @@ export function VehicleCheckInForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      alert('Please log in to submit check-ins');
+      return;
+    }
+
+    if (!selectedVehicle) {
+      alert('Please select a vehicle');
+      return;
+    }
+
     if (photos.length !== VEHICLE_ANGLES.length) {
       alert('Please provide photos from all required angles');
       return;
     }
-    // TODO: Implement form submission
-    console.log('Selected Vehicle:', selectedVehicle);
-    console.log('Photos:', photos);
+
+    try {
+      // Upload all photos
+      console.log('all photos', photos);
+      const uploadPromises = photos.map((photo) =>
+        uploadPicture(photo.file, photo.id, photo.vehicule_id || 0, user.id, photo.angle, photo.previewUrl)
+      );
+
+      await Promise.all(uploadPromises);
+
+      // Clear form
+      setSelectedVehicle(null);
+      setPhotos([]);
+      alert('Check-in completed successfully!');
+    } catch (error) {
+      console.error('Error during check-in:', error);
+      alert('Failed to complete check-in. Please try again.');
+    }
   };
 
   const getPhotoForAngle = (angle: VehicleAngle) => {
@@ -148,14 +193,14 @@ export function VehicleCheckInForm() {
         <div>
           <label className='block text-sm font-medium text-gray-400 mb-2'>Select a vehicle</label>
           <select
-            value={selectedVehicle}
-            onChange={(e) => setSelectedVehicle(e.target.value)}
+            value={selectedVehicle?.id.toString() || ''}
+            onChange={(e) => setSelectedVehicle(vehicles.find((v) => v.id.toString() === e.target.value) || null)}
             className='w-full bg-black/40 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gray-500 appearance-none'
           >
             <option value=''>Choose a vehicle</option>
-            {SAMPLE_VEHICLES.map((vehicle) => (
+            {vehicles.map((vehicle) => (
               <option key={vehicle.id} value={vehicle.id}>
-                {vehicle.licensePlate} - {vehicle.make} {vehicle.model}
+                {vehicle.license_plate} - {vehicle.brand} {vehicle.model}
               </option>
             ))}
           </select>

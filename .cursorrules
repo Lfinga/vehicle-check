@@ -1,43 +1,75 @@
+## Project guidelines
 
-  You are an expert in TypeScript, Supabase, Next.js App Router, React and Tailwind.
+- This project is using the latest TypeScript, next.js 15 (App Router) with the new React server components RSC.
+- To link between server services located in `server/services` and either client components or server components RSCs we use server actions located in `action.ts` with `'use server'` directive. We can have multiple server actions in the same file. We can have multiple server actions files.
+- For styling UI/UX we use Tailwind.
+- For database we use Supabase with <Database> type located in @/types/supabase.ts.
+- For Authentication we use also use Supabase Auth.
+- For storage we use Supabase Storage buckets.
+- write code without useless comments, write self explanatory code.
+- please make sure to remove all unused code and files.
   
-  Code Style and Structure
-  - Write concise, technical TypeScript code with accurate examples.
-  - Use functional and declarative programming patterns; avoid classes.
-  - Prefer iteration and modularization over code duplication.
-  - Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
-  - Structure files: exported component, subcomponents, helpers, static content, types.
-  
-  Naming Conventions
-  - Use lowercase with dashes for directories (e.g., components/auth-wizard).
-  - Favor named exports for components.
-  
-  TypeScript Usage
-  - Use TypeScript for all code; prefer interfaces over types.
-  - Avoid enums; use maps instead.
-  - Use functional components with TypeScript interfaces.
-  
-  Syntax and Formatting
-  - Use the "function" keyword for pure functions.
-  - Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
-  - Use declarative JSX.
-  
-  UI and Styling
-  - Use Tailwind for components and styling.
-  - Implement responsive design with Tailwind CSS; use a mobile-first approach.
-  
-  Performance Optimization
-  - Minimize 'use client', 'useEffect', and 'setState'; favor React Server Components (RSC).
-  - Wrap client components in Suspense with fallback.
-  - Use dynamic loading for non-critical components.
-  - Optimize images: use WebP format, include size data, implement lazy loading.
-  
-  Key Conventions
-  - Optimize Web Vitals (LCP, CLS, FID).
-  - Limit 'use client':
-    - Favor server components and Next.js SSR.
-    - Use only for Web API access in small components.
-    - Avoid for data fetching or state management.
-  
-  Follow Next.js docs for Data Fetching, Rendering, and Routing.
-  
+
+## Project structure
+
+These are my current files. Please make sure to update .cursorrules file when you add or remove files and folders to always reflect the current project structure.
+
+.
+|-- .cursorrules
+|-- .env.local
+|-- .gitignore
+|-- README.md
+|-- app
+|   |-- auth
+|   |-- components
+|   |   |-- dashboard
+|   |   |   |-- new-check-in-button.tsx
+|   |   |   `-- stats-cards.tsx
+|   |   |-- new-check-in
+|   |   |   `-- vehicle-check-in-form.tsx
+|   |   |-- sidebar.tsx
+|   |   `-- vehicle-history
+|   |       |-- search-bar.tsx
+|   |       `-- vehicle-list.tsx
+|   |-- dashboard
+|   |   `-- page.tsx
+|   |-- error
+|   |   `-- page.tsx
+|   |-- globals.css
+|   |-- layout.tsx
+|   |-- login
+|   |   |-- action.ts
+|   |   |-- login-form.tsx
+|   |   `-- page.tsx
+|   |-- new-check-in
+|   |   `-- page.tsx
+|   |-- page.tsx
+|   `-- vehicle-history
+|       `-- page.tsx
+|-- eslint.config.mjs
+|-- middleware.ts
+|-- next-env.d.ts
+|-- next.config.ts
+|-- package-lock.json
+|-- package.json
+|-- postcss.config.mjs
+|-- server
+|   |-- services
+|   |   |-- pictures.ts
+|   |   `-- users.ts
+|   `-- supabase
+|       |-- .gitignore
+|       |-- .temp
+|       |   `-- cli-latest
+|       |-- client.ts
+|       |-- config.toml
+|       |-- middleware.ts
+|       `-- server.ts
+|-- supabase
+|   |-- .temp
+|   |   `-- cli-latest
+|   `-- migrations
+|-- tailwind.config.ts
+|-- tsconfig.json
+`-- types
+    `-- supabase.ts
