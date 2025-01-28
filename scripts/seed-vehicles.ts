@@ -1,7 +1,7 @@
 import { createAdminClient } from '../server/supabase/admin';
 import { Database } from '../types/supabase';
 
-type VehicleInsert = Database['public']['Tables']['vehicules']['Insert'];
+type VehicleInsert = Database['public']['Tables']['vehicles']['Insert'];
 
 const VEHICLES_DATA: VehicleInsert[] = [
   { license_plate: 'ABC-123', brand: 'Toyota', model: 'Camry', year: '2022' },
@@ -24,7 +24,7 @@ async function seedVehicles() {
 
     // First, check if we already have vehicles to avoid duplicates
     const { data: existingVehicles, error: fetchError } = await supabase
-      .from('vehicules')
+      .from('vehicles')
       .select('license_plate');
 
     if (fetchError) {
@@ -45,7 +45,7 @@ async function seedVehicles() {
 
     console.log(`Inserting ${vehiclesToInsert.length} new vehicles...`);
     const { data, error } = await supabase
-      .from('vehicules')
+      .from('vehicles')
       .insert(vehiclesToInsert)
       .select();
 
