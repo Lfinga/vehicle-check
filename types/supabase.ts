@@ -42,10 +42,17 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "pictures_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "pictures_vehicule_fkey"
             columns: ["vehicule_id"]
             isOneToOne: false
-            referencedRelation: "vehicules"
+            referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
         ]
@@ -74,7 +81,7 @@ export type Database = {
         }
         Relationships: []
       }
-      vehicules: {
+      vehicles: {
         Row: {
           brand: string
           created_at: string
