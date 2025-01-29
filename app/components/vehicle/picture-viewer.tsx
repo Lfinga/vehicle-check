@@ -15,6 +15,16 @@ export default function PictureViewer({
 }) {
   const [selectedPicture, setSelectedPicture] = useState<Picture | null>(null);
 
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   return (
     <>
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
@@ -39,8 +49,9 @@ export default function PictureViewer({
                     <p className='text-white text-sm'>{picture.description}</p>
                   </div>
                 )}
-                <div className='absolute top-2 right-2 px-2 py-1 bg-black/60 rounded text-xs text-white translate-x-full group-hover:translate-x-0 transition-transform duration-300'>
-                  {picture.angle || 'No angle specified'}
+                <div className='absolute top-2 right-2 px-2 py-1 bg-black/60 rounded text-xs text-white translate-x-full group-hover:translate-x-0 transition-transform duration-300 flex flex-col items-end gap-1'>
+                  <span>{picture.angle || 'No angle specified'}</span>
+                  <span className='text-gray-400'>{formatDateTime(picture.created_at)}</span>
                 </div>
                 <div className='absolute inset-0 ring-2 ring-white/0 group-hover:ring-white/20 transition-all duration-300' />
               </>
@@ -83,8 +94,9 @@ export default function PictureViewer({
               />
             </div>
             <div className='absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-slide-up'>
-              <div className='px-3 py-1.5 bg-black/80 rounded text-sm text-white backdrop-blur-sm'>
-                {selectedPicture.angle || 'No angle specified'}
+              <div className='px-3 py-1.5 bg-black/80 rounded text-sm text-white backdrop-blur-sm flex flex-col items-center gap-1'>
+                <span>{selectedPicture.angle || 'No angle specified'}</span>
+                <span className='text-gray-400'>{formatDateTime(selectedPicture.created_at)}</span>
               </div>
               {selectedPicture.description && (
                 <div className='px-3 py-1.5 bg-black/80 rounded text-sm text-white max-w-xl text-center backdrop-blur-sm'>

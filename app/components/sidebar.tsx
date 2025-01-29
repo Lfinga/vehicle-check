@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, FileText, Menu, X, User } from 'lucide-react';
+import { Home, FileText, Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import LogoutButton from './logout-button';
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -68,9 +69,7 @@ export function Sidebar() {
           </nav>
 
           <div className='absolute bottom-4 right-4'>
-            <button className='p-2 rounded-full hover:bg-gray-800 transition-colors'>
-              <User size={20} />
-            </button>
+            <LogoutButton />
           </div>
         </div>
       </div>
