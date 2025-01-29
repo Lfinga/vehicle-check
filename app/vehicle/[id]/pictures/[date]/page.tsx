@@ -28,8 +28,21 @@ export default async function VehiclePicturesPage({ params }: { params: { id: st
       <main className='p-4 lg:ml-64 lg:p-8'>
         <div className='mb-8'>
           <div className='flex items-center gap-4 mb-6'>
-            <Link href={`/vehicle/${id}`} className='text-gray-400 hover:text-white transition-colors'>
-              ← Back to vehicle
+            <Link
+              href={`/vehicle/${id}`}
+              className='group flex items-center gap-2 text-gray-400 hover:text-white transition-colors'
+            >
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 24 24'
+                strokeWidth={2}
+                stroke='currentColor'
+                className='w-5 h-5 transform group-hover:-translate-x-1 transition-transform'
+              >
+                <path strokeLinecap='round' strokeLinejoin='round' d='M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18' />
+              </svg>
+              Back to Vehicle History
             </Link>
             <h1 className='text-3xl font-bold text-white'>
               {vehicle.brand} {vehicle.model}
