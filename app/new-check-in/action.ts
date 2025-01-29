@@ -19,6 +19,11 @@ export async function uploadVehicleImages(vehicleId: number,userId: string, imag
         console.error('Error uploading file:', uploadError);
         throw uploadError;
       }
+  //     const { publicURL, error } = await supabase
+  // .storage
+  // .from('vehicules_pictures')
+  // .getPublicUrl('folder/avatar1.png')
+      console.log("uploadData",uploadData)
 
       // Store reference in pictures table
       const { error: dbError } = await supabase.from('pictures').insert({
@@ -26,6 +31,7 @@ export async function uploadVehicleImages(vehicleId: number,userId: string, imag
         vehicule_id: vehicleId,
         angle: angle as Angle,
         bucket_picture_id: uploadData.path,
+        picture_url: `https://lsehxbtdvpvpnlfwmvsq.supabase.co/storage/v1/object/public/${uploadData.fullPath}`,
       });
 
       if (dbError) {

@@ -1,6 +1,7 @@
 import { Sidebar } from '@/app/components/sidebar';
 import { getVehicleById } from '@/server/services/vehicles';
 import { notFound } from 'next/navigation';
+import PictureDates from '@/app/components/vehicle/picture-dates';
 
 export default async function VehiclePage({ params }: { params: { id: string } }) {
   const { id } = await params;
@@ -32,13 +33,19 @@ export default async function VehiclePage({ params }: { params: { id: string } }
             </div>
           </div>
 
-          <h2 className='text-xl font-bold text-white mb-4'>Vehicle Pictures</h2>
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-            {/* Pictures will be implemented in the next step */}
-            <div className='aspect-video bg-gray-900/50 rounded-lg flex items-center justify-center text-gray-400'>
-              Coming soon: Vehicle pictures
-            </div>
+          <div className='mb-8'>
+            <h2 className='text-xl font-bold text-white mb-4'>Picture Dates</h2>
+            <PictureDates vehicleId={vehicle.id} />
           </div>
+
+          {/* <div>
+            <h2 className='text-xl font-bold text-white mb-4'>Vehicle Pictures</h2>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+              <div className='aspect-video bg-gray-900/50 rounded-lg flex items-center justify-center text-gray-400'>
+                Coming soon: Vehicle pictures
+              </div>
+            </div>
+          </div> */}
         </div>
       </main>
     </div>
