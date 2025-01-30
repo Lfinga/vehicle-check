@@ -84,26 +84,32 @@ export type Database = {
       vehicles: {
         Row: {
           brand: string
+          color: string
           created_at: string
           id: number
           license_plate: string
           model: string
+          vehicle_picture_url: string | null
           year: string
         }
         Insert: {
           brand: string
+          color: string
           created_at?: string
           id?: number
           license_plate: string
           model: string
+          vehicle_picture_url?: string | null
           year: string
         }
         Update: {
           brand?: string
+          color?: string
           created_at?: string
           id?: number
           license_plate?: string
           model?: string
+          vehicle_picture_url?: string | null
           year?: string
         }
         Relationships: []
