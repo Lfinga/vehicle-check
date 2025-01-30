@@ -3,7 +3,7 @@ import { SearchBar } from '../components/vehicle-history/search-bar';
 import VehicleListContainer from '../components/vehicle-history/vehicle-list-container';
 
 export default async function VehicleHistory({ searchParams }: { searchParams?: { query?: string } }) {
-  const { query } = searchParams ?? {};
+  const { query } = await searchParams!;
   return (
     <div className='min-h-screen bg-[#111]'>
       <Sidebar />
