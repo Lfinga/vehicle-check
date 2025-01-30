@@ -8,6 +8,7 @@
 - For storage we use Supabase Storage buckets.
 - write code without useless comments, write self explanatory code.
 - please make sure to remove all unused code and files.
+- when using searchparams or params, make sure to use the correct type for the searchparams or params like show in this page https://nextjs.org/docs/app/api-reference/file-conventions/page.
   
 
 ## Project structure

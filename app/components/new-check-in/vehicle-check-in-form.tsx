@@ -23,7 +23,7 @@ type Vehicle = {
 
 type Props = {
   vehicles: Vehicle[];
-  userId: string;
+  userId: string | null;
 };
 
 export default function VehicleCheckInForm({ vehicles, userId }: Props) {
@@ -69,7 +69,7 @@ export default function VehicleCheckInForm({ vehicles, userId }: Props) {
 
     setIsSubmitting(true);
     try {
-      const result = await uploadVehicleImages(Number(selectedVehicle), userId, imageFiles);
+      const result = await uploadVehicleImages(Number(selectedVehicle), userId!, imageFiles);
       if (result.success) {
         router.push('/vehicle-history');
       } else {

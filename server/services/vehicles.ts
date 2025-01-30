@@ -1,6 +1,6 @@
 import { createClient } from '@/server/supabase/server';
 
-export async function getAllVehicles(query?: string) {
+export async function getAllVehicles( query?: string ) {
   const supabase = await createClient();
   
   let vehicleQuery = supabase.from('vehicles').select('*');

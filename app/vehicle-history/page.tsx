@@ -2,12 +2,8 @@ import { Sidebar } from '../components/sidebar';
 import { SearchBar } from '../components/vehicle-history/search-bar';
 import VehicleListContainer from '../components/vehicle-history/vehicle-list-container';
 
-interface SearchParams {
-  query?: string;
-}
-
-export default function VehicleHistory({ searchParams }: { searchParams: SearchParams }) {
-  const query = searchParams.query;
+export default async function VehicleHistory({ searchParams }: { searchParams: Promise<{ query?: string }> }) {
+  const { query } = await searchParams;
 
   return (
     <div className='min-h-screen bg-[#111]'>

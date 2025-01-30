@@ -5,8 +5,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import PictureViewer from '@/app/components/vehicle/picture-viewer';
 
-export default async function VehiclePicturesPage({ params }: { params: { id: string; date: string } }) {
-  const { id, date } = params;
+export default async function VehiclePicturesPage({ params }: { params: Promise<{ id: string; date: string }> }) {
+  const { id, date } = await params;
   const vehicle = await getVehicleById(parseInt(id));
   const pictures = await getPicturesByDate(parseInt(id), date);
 

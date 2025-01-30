@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/server/supabase/server';
 
-export default async function VehiclePage({ params }: { params: { id: string } }) {
+export default async function VehiclePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const vehicle = await getVehicleById(parseInt(id));
   const supabase = await createClient();
