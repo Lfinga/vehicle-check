@@ -4,16 +4,16 @@ import { Database } from '../types/supabase';
 type VehicleInsert = Database['public']['Tables']['vehicles']['Insert'];
 
 const VEHICLES_DATA: VehicleInsert[] = [
-  { license_plate: 'ABC-123', brand: 'Toyota', model: 'Camry', year: '2022' },
-  { license_plate: 'XYZ-789', brand: 'Honda', model: 'Civic', year: '2023' },
-  { license_plate: 'DEF-456', brand: 'Ford', model: 'Mustang', year: '2021' },
-  { license_plate: 'GHI-789', brand: 'Tesla', model: 'Model 3', year: '2023' },
-  { license_plate: 'JKL-012', brand: 'BMW', model: 'X5', year: '2022' },
-  { license_plate: 'MNO-345', brand: 'Mercedes', model: 'C-Class', year: '2023' },
-  { license_plate: 'PQR-678', brand: 'Audi', model: 'A4', year: '2022' },
-  { license_plate: 'STU-901', brand: 'Volkswagen', model: 'Golf', year: '2021' },
-  { license_plate: 'VWX-234', brand: 'Hyundai', model: 'Tucson', year: '2023' },
-  { license_plate: 'YZA-567', brand: 'Kia', model: 'Sportage', year: '2022' },
+  { license_plate: 'ABC-123', brand: 'Toyota', model: 'Camry', year: '2022', color: 'Red' },
+  { license_plate: 'XYZ-789', brand: 'Honda', model: 'Civic', year: '2023', color: 'Blue' },
+  { license_plate: 'DEF-456', brand: 'Ford', model: 'Mustang', year: '2021', color: 'Green' },
+  { license_plate: 'GHI-789', brand: 'Tesla', model: 'Model 3', year: '2023', color: 'Black' },
+  { license_plate: 'JKL-012', brand: 'BMW', model: 'X5', year: '2022', color: 'White' },
+  { license_plate: 'MNO-345', brand: 'Mercedes', model: 'C-Class', year: '2023', color: 'Silver' },
+  { license_plate: 'PQR-678', brand: 'Audi', model: 'A4', year: '2022', color: 'Red' },
+  { license_plate: 'STU-901', brand: 'Volkswagen', model: 'Golf', year: '2021', color: 'White' },
+  { license_plate: 'VWX-234', brand: 'Hyundai', model: 'Tucson', year: '2023', color: 'Blue' },
+  { license_plate: 'YZA-567', brand: 'Kia', model: 'Sportage', year: '2022', color: 'Green' },
 ];
 
 async function seedVehicles() {

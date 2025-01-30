@@ -58,13 +58,13 @@ export function Sidebar() {
             </Link>
 
             <Link
-              href='/vehicle-history'
+              href='/admin/vehicles'
               className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors ${isActive(
-                '/vehicle-history'
+                '/admin/vehicles'
               )}`}
             >
               <FileText size={20} />
-              <span>Vehicle History</span>
+              <span>Vehicles</span>
             </Link>
           </nav>
 

@@ -4,25 +4,14 @@ import { notFound } from 'next/navigation';
 import PictureDates from '@/app/components/vehicle/picture-dates';
 import Link from 'next/link';
 import Image from 'next/image';
-import { createClient } from '@/server/supabase/server';
 
 export default async function VehiclePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const vehicle = await getVehicleById(parseInt(id));
-  const supabase = await createClient();
 
   if (!vehicle) {
     notFound();
   }
-
-  // Get the latest picture
-  const { data: latestPicture } = await supabase
-    .from('pictures')
-    .select('picture_url')
-    .eq('vehicule_id', vehicle.id)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single();
 
   return (
     <div className='min-h-screen bg-[#111]'>
@@ -32,7 +21,7 @@ export default async function VehiclePage({ params }: { params: Promise<{ id: st
         <div className='mb-8'>
           <div className='flex items-center gap-4 mb-6'>
             <Link
-              href='/vehicle-history'
+              href='/admin/vehicles'
               className='group flex items-center gap-2 text-gray-400 hover:text-white transition-colors'
             >
               <svg
@@ -45,15 +34,15 @@ export default async function VehiclePage({ params }: { params: Promise<{ id: st
               >
                 <path strokeLinecap='round' strokeLinejoin='round' d='M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18' />
               </svg>
-              Back to Vehicle History
+              Back to Vehicles
             </Link>
           </div>
 
           <div className='bg-gray-900/50 rounded-lg overflow-hidden mb-8'>
             <div className='relative aspect-[21/9] w-full'>
-              {latestPicture?.picture_url ? (
+              {vehicle.vehicle_picture_url ? (
                 <Image
-                  src={latestPicture.picture_url}
+                  src={vehicle.vehicle_picture_url}
                   alt={`${vehicle.brand} ${vehicle.model}`}
                   fill
                   className='object-cover'

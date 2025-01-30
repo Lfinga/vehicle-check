@@ -32,13 +32,13 @@ export default function VehicleList({ vehicles }: { vehicles: Vehicle[] }) {
       {vehicles.map((vehicle) => (
         <Link
           key={vehicle.id}
-          href={`/vehicle/${vehicle.id}`}
+          href={`/admin/vehicles/${vehicle.id}`}
           className='group bg-gray-900/50 rounded-lg overflow-hidden hover:bg-gray-800/50 transition-all duration-300 hover:shadow-xl'
         >
           <div className='relative aspect-[16/9]'>
-            {vehicle.latest_picture?.picture_url ? (
+            {vehicle.vehicle_picture_url ? (
               <Image
-                src={`https://lsehxbtdvpvpnlfwmvsq.supabase.co/storage/v1/object/public/vehicules_pictures/7/rear-right-1738118662497`}
+                src={vehicle.vehicle_picture_url!}
                 alt={`${vehicle.brand} ${vehicle.model}`}
                 fill
                 className='object-cover transition-transform duration-500 group-hover:scale-105'

@@ -29,7 +29,7 @@ export default async function VehiclePicturesPage({ params }: { params: Promise<
         <div className='mb-8'>
           <div className='flex items-center gap-4 mb-6'>
             <Link
-              href={`/vehicle/${id}`}
+              href={`/admin/vehicles/${id}`}
               className='group flex items-center gap-2 text-gray-400 hover:text-white transition-colors'
             >
               <svg
@@ -42,7 +42,7 @@ export default async function VehiclePicturesPage({ params }: { params: Promise<
               >
                 <path strokeLinecap='round' strokeLinejoin='round' d='M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18' />
               </svg>
-              Back to Vehicle History
+              Back to the vehicle
             </Link>
             <h1 className='text-3xl font-bold text-white'>
               {vehicle.brand} {vehicle.model}

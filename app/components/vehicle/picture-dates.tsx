@@ -21,7 +21,7 @@ export default async function PictureDates({ vehicleId }: { vehicleId: number })
         return (
           <Link
             key={date}
-            href={`/vehicle/${vehicleId}/pictures/${date}`}
+            href={`/admin/vehicles/${vehicleId}/pictures/${date}`}
             className='block p-4 bg-gray-900/50 rounded-lg hover:bg-gray-800/50 transition-colors'
           >
             <time dateTime={date} className='text-gray-300 text-sm'>
