@@ -1,8 +1,22 @@
 import { Sidebar } from '../components/sidebar';
-import { StatsCards } from '../components/dashboard/stats-cards';
 import { NewCheckInButton } from '../components/dashboard/new-check-in-button';
+import { DriverStatsCards } from '../components/dashboard/driver-stats-cards';
+import { getDriverStats } from './action';
 
-export default function Dashboard() {
+export default async function Dashboard() {
+  const stats = await getDriverStats();
+
+  if (!stats) {
+    return (
+      <div className='min-h-screen bg-[#111]'>
+        <Sidebar />
+        <main className='p-4 lg:ml-64 lg:p-8'>
+          <div className='text-white'>Please log in to view your dashboard.</div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className='min-h-screen bg-[#111]'>
       <Sidebar />
@@ -13,7 +27,7 @@ export default function Dashboard() {
           <NewCheckInButton />
         </div>
 
-        <StatsCards />
+        <DriverStatsCards totalCheckIns={stats.totalCheckIns} lastCheckInDate={stats.lastCheckInDate} />
       </main>
     </div>
   );
