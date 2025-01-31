@@ -71,7 +71,7 @@ export default function VehicleCheckInForm({ vehicles, userId }: Props) {
     try {
       const result = await uploadVehicleImages(Number(selectedVehicle), userId!, imageFiles);
       if (result.success) {
-        router.push('/vehicle-history');
+        router.push('/admin/vehicles');
       } else {
         alert('Failed to upload images. Please try again.');
       }

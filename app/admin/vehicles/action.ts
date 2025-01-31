@@ -1,5 +1,6 @@
 'use server'
 
+import { getVehicleById } from '@/server/services/vehicles'
 import { createClient } from '@/server/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -51,4 +52,33 @@ export async function addVehicle(formData: FormData) {
 
   revalidatePath('/admin/vehicles')
   redirect('/admin/vehicles')
+}
+
+export async function updateVehiclePicture(vehicleId: number, file: File) {
+
+  const supabase = await createClient()
+  const vehicle = await getVehicleById(vehicleId)
+  // Upload the file to Supabase Storage
+  const fileName = `main/${vehicle?.license_plate}/${file.name}`
+  const { data: uploadData, error: uploadError } = await supabase.storage
+    .from('vehicules_pictures')
+    .upload(fileName, file)
+
+  if (uploadError) {
+    console.error('Error uploading file:', uploadError)
+    throw uploadError
+  }
+
+  // Update the vehicle record with the new picture URL
+  const { error: updateError } = await supabase
+    .from('vehicles')
+    .update({ vehicle_picture_url: `https://lsehxbtdvpvpnlfwmvsq.supabase.co/storage/v1/object/public/${uploadData.fullPath}` })
+    .eq('id', vehicleId)
+
+  if (updateError) {
+    console.error('Error updating vehicle:', updateError)
+    throw updateError
+  }
+
+  return `https://lsehxbtdvpvpnlfwmvsq.supabase.co/storage/v1/object/public/${uploadData.fullPath}`
 } 

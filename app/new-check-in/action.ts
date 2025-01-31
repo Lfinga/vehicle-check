@@ -23,7 +23,7 @@ export async function uploadVehicleImages(vehicleId: number,userId: string, imag
   // .storage
   // .from('vehicules_pictures')
   // .getPublicUrl('folder/avatar1.png')
-      console.log("uploadData",uploadData)
+      // console.log("uploadData",uploadData)
 
       // Store reference in pictures table
       const { error: dbError } = await supabase.from('pictures').insert({
@@ -40,7 +40,7 @@ export async function uploadVehicleImages(vehicleId: number,userId: string, imag
       }
     }
 
-    revalidatePath('/vehicle-history');
+    revalidatePath('/admin/vehicles');
     return { success: true };
   } catch (error) {
     console.error('Error in uploadVehicleImages:', error);
