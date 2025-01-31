@@ -1,19 +1,17 @@
 'use client';
 
-import { Database } from '@/types/supabase';
+import { PictureWithDriver } from '@/server/services/pictures';
 import Image from 'next/image';
 import { useState } from 'react';
-
-type Picture = Database['public']['Tables']['pictures']['Row'];
 
 export default function PictureViewer({
   pictures,
   vehicle,
 }: {
-  pictures: Picture[];
+  pictures: PictureWithDriver[];
   vehicle: { brand: string; model: string };
 }) {
-  const [selectedPicture, setSelectedPicture] = useState<Picture | null>(null);
+  const [selectedPicture, setSelectedPicture] = useState<PictureWithDriver | null>(null);
 
   const formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleString('en-US', {
@@ -52,6 +50,7 @@ export default function PictureViewer({
                 <div className='absolute top-2 right-2 px-2 py-1 bg-black/60 rounded text-xs text-white translate-x-full group-hover:translate-x-0 transition-transform duration-300 flex flex-col items-end gap-1'>
                   <span>{picture.angle || 'No angle specified'}</span>
                   <span className='text-gray-400'>{formatDateTime(picture.created_at)}</span>
+                  <span className='text-gray-400'>Driver: {picture.driver_name}</span>
                 </div>
                 <div className='absolute inset-0 ring-2 ring-white/0 group-hover:ring-white/20 transition-all duration-300' />
               </>
@@ -97,6 +96,7 @@ export default function PictureViewer({
               <div className='px-3 py-1.5 bg-black/80 rounded text-sm text-white backdrop-blur-sm flex flex-col items-center gap-1'>
                 <span>{selectedPicture.angle || 'No angle specified'}</span>
                 <span className='text-gray-400'>{formatDateTime(selectedPicture.created_at)}</span>
+                <span className='text-gray-400'>Driver: {selectedPicture.driver_name}</span>
               </div>
               {selectedPicture.description && (
                 <div className='px-3 py-1.5 bg-black/80 rounded text-sm text-white max-w-xl text-center backdrop-blur-sm'>

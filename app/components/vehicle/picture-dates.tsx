@@ -9,9 +9,9 @@ export default async function PictureDates({ vehicleId }: { vehicleId: number })
   }
 
   return (
-    <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4'>
-      {dates.map((date) => {
-        const formattedDate = new Date(date).toLocaleDateString('en-US', {
+    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+      {dates.map((dateInfo) => {
+        const formattedDate = new Date(dateInfo.date).toLocaleDateString('en-US', {
           weekday: 'short',
           year: 'numeric',
           month: 'short',
@@ -20,13 +20,16 @@ export default async function PictureDates({ vehicleId }: { vehicleId: number })
 
         return (
           <Link
-            key={date}
-            href={`/admin/vehicles/${vehicleId}/pictures/${date}`}
+            key={dateInfo.date}
+            href={`/admin/vehicles/${vehicleId}/pictures/${dateInfo.date}`}
             className='block p-4 bg-gray-900/50 rounded-lg hover:bg-gray-800/50 transition-colors'
           >
-            <time dateTime={date} className='text-gray-300 text-sm'>
-              {formattedDate}
-            </time>
+            <div className='flex flex-col gap-1'>
+              <time dateTime={dateInfo.date} className='text-gray-300 text-sm'>
+                {formattedDate}
+              </time>
+              <span className='text-xs text-gray-400'>Driver: {dateInfo.driver_name}</span>
+            </div>
           </Link>
         );
       })}
