@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run type-check && next build",
     "start": "next start",
     "lint": "next lint",
     "generate-types": "npx supabase gen types typescript --project-id lsehxbtdvpvpnlfwmvsq --schema public > types/supabase.ts",
-    "seed:vehicles": "cross-env tsx scripts/seed-vehicles.ts"
+    "seed:vehicles": "cross-env tsx scripts/seed-vehicles.ts",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
