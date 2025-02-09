@@ -5,8 +5,10 @@ import { usePathname } from 'next/navigation';
 import { Home, FileText, Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import LogoutButton from './logout-button';
+// import { getUser } from '@/server/services/users';
 
 export function Sidebar() {
+  // const user = getUser();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -35,11 +37,11 @@ export function Sidebar() {
       {/* Sidebar */}
       <div
         className={`
-        fixed top-0 left-0 h-full bg-black text-white z-40
-        w-64 transform transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0 lg:z-30
-      `}
+          fixed top-0 left-0 h-full bg-black text-white z-40
+          w-64 transform transition-transform duration-300 ease-in-out
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+          lg:translate-x-0 lg:z-30
+        `}
       >
         <div className='p-4'>
           <div className='mb-8 flex items-center justify-between'>

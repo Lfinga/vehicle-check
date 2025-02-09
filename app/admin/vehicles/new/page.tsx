@@ -1,7 +1,6 @@
 import { createClient } from '@/server/supabase/server';
 import { redirect } from 'next/navigation';
 import NewVehicleForm from '@/app/components/admin/vehicles/new-vehicle-form';
-import { Sidebar } from '@/app/components/sidebar';
 
 export default async function NewVehiclePage() {
   const supabase = await createClient();
@@ -22,7 +21,6 @@ export default async function NewVehiclePage() {
 
   return (
     <div className='min-h-screen bg-[#111]'>
-      <Sidebar />
       <main className='p-4 lg:ml-64 lg:p-8'>
         <div className='mb-8'>
           <h1 className='text-3xl font-bold text-white mb-8'>Add New Vehicle</h1>

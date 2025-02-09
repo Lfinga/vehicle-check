@@ -1,4 +1,3 @@
-import { Sidebar } from '../../components/sidebar';
 import { SearchBar } from '../../components/vehicle-history/search-bar';
 import VehicleListContainer from '../../components/vehicle-history/vehicle-list-container';
 import Link from 'next/link';
@@ -26,8 +25,6 @@ export default async function VehicleHistory({ searchParams }: { searchParams: P
 
   return (
     <div className='min-h-screen bg-[#111]'>
-      <Sidebar />
-
       <main className='p-4 lg:ml-64 lg:p-8'>
         <div className='mb-8'>
           <div className='flex justify-between items-center mb-6'>

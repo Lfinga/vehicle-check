@@ -1,4 +1,3 @@
-import { Sidebar } from '@/app/components/sidebar';
 import { getVehicleById } from '@/server/services/vehicles';
 import { notFound } from 'next/navigation';
 import PictureDates from '@/app/components/vehicle/picture-dates';
@@ -16,7 +15,6 @@ export default async function VehiclePage({ params }: { params: Promise<{ id: st
 
   return (
     <div className='min-h-screen bg-[#111]'>
-      <Sidebar />
 
       <main className='p-4 lg:ml-64 lg:p-8'>
         <div className='mb-8'>
