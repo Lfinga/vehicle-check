@@ -9,50 +9,79 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      pictures: {
+      check_ins: {
         Row: {
-          angle: Database["public"]["Enums"]["angle"] | null
-          bucket_picture_id: string | null
           created_at: string
-          description: string | null
+          driver_id: string | null
           id: number
-          picture_url: string | null
-          user_id: string | null
-          vehicule_id: number | null
+          notes: string | null
+          vehicle_id: number | null
         }
         Insert: {
-          angle?: Database["public"]["Enums"]["angle"] | null
-          bucket_picture_id?: string | null
           created_at?: string
-          description?: string | null
+          driver_id?: string | null
           id?: number
-          picture_url?: string | null
-          user_id?: string | null
-          vehicule_id?: number | null
+          notes?: string | null
+          vehicle_id?: number | null
         }
         Update: {
-          angle?: Database["public"]["Enums"]["angle"] | null
-          bucket_picture_id?: string | null
           created_at?: string
-          description?: string | null
+          driver_id?: string | null
           id?: number
-          picture_url?: string | null
-          user_id?: string | null
-          vehicule_id?: number | null
+          notes?: string | null
+          vehicle_id?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "pictures_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "check_ins_driver_id_fkey"
+            columns: ["driver_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "pictures_vehicule_fkey"
-            columns: ["vehicule_id"]
+            foreignKeyName: "check_ins_vehicle_id_fkey"
+            columns: ["vehicle_id"]
             isOneToOne: false
             referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pictures: {
+        Row: {
+          angle: Database["public"]["Enums"]["angle"]
+          bucket_picture_id: string
+          check_in_id: number
+          created_at: string
+          description: string | null
+          id: number
+          picture_url: string | null
+        }
+        Insert: {
+          angle: Database["public"]["Enums"]["angle"]
+          bucket_picture_id: string
+          check_in_id: number
+          created_at?: string
+          description?: string | null
+          id?: number
+          picture_url?: string | null
+        }
+        Update: {
+          angle?: Database["public"]["Enums"]["angle"]
+          bucket_picture_id?: string
+          check_in_id?: number
+          created_at?: string
+          description?: string | null
+          id?: number
+          picture_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pictures_check_in_id_fkey"
+            columns: ["check_in_id"]
+            isOneToOne: false
+            referencedRelation: "check_ins"
             referencedColumns: ["id"]
           },
         ]

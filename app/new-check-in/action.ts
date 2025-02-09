@@ -5,9 +5,24 @@ import { revalidatePath } from 'next/cache';
 
 type Angle = 'front-right' | 'front-left' | 'rear-right' | 'rear-left';
 
-export async function uploadVehicleImages(vehicleId: number,userId: string, images: { [key: string]: File }) {
+export async function uploadVehicleImages(vehicleId: number, userId: string, images: { [key: string]: File }) {
   try {
     const supabase = await createClient();
+
+    // First create a check-in record
+    const { data: checkIn, error: checkInError } = await supabase
+      .from('check_ins')
+      .insert({
+        vehicle_id: vehicleId,
+        driver_id: userId,
+      })
+      .select()
+      .single();
+
+    if (checkInError) {
+      console.error('Error creating check-in:', checkInError);
+      throw checkInError;
+    }
 
     for (const [angle, file] of Object.entries(images)) {
       // Upload to storage bucket
@@ -19,16 +34,10 @@ export async function uploadVehicleImages(vehicleId: number,userId: string, imag
         console.error('Error uploading file:', uploadError);
         throw uploadError;
       }
-  //     const { publicURL, error } = await supabase
-  // .storage
-  // .from('vehicules_pictures')
-  // .getPublicUrl('folder/avatar1.png')
-      // console.log("uploadData",uploadData)
 
       // Store reference in pictures table
       const { error: dbError } = await supabase.from('pictures').insert({
-        user_id: userId,
-        vehicule_id: vehicleId,
+        check_in_id: checkIn.id,
         angle: angle as Angle,
         bucket_picture_id: uploadData.path,
         picture_url: `https://lsehxbtdvpvpnlfwmvsq.supabase.co/storage/v1/object/public/${uploadData.fullPath}`,
