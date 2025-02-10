@@ -1,3 +1,3 @@
 export default function CheckIns() {
-  return <div>CheckIns</div>;
+  return <div>My Check-Ins</div>;
 }
