@@ -15,10 +15,19 @@ type CheckInWithDriver = {
   } | null;
 };
 
-export async function getPictureDatesForVehicle(vehicleId: number): Promise<{ date: string; driver_name: string }[]> {
+interface GetPictureDatesOptions {
+  startDate?: string;
+  endDate?: string;
+  driver?: string;
+}
+
+export async function getPictureDatesForVehicle(
+  vehicleId: number,
+  options?: GetPictureDatesOptions
+): Promise<{ date: string; driver_name: string }[]> {
   const supabase = await createClient();
   
-  const { data: checkIns, error } = await supabase
+  let query = supabase
     .from('check_ins')
     .select(`
       created_at,
@@ -27,8 +36,21 @@ export async function getPictureDatesForVehicle(vehicleId: number): Promise<{ da
         last_name
       )
     `)
-    .eq('vehicle_id', vehicleId)
-    .order('created_at', { ascending: false });
+    .eq('vehicle_id', vehicleId);
+
+  // Apply date range filter if provided
+  if (options?.startDate) {
+    const startDate = new Date(options.startDate);
+    query = query.gte('created_at', startDate.toISOString());
+  }
+  
+  if (options?.endDate) {
+    const endDate = new Date(options.endDate);
+    endDate.setDate(endDate.getDate() + 1); // Include the entire end date
+    query = query.lt('created_at', endDate.toISOString());
+  }
+
+  const { data: checkIns, error } = await query.order('created_at', { ascending: false });
 
   if (error) {
     console.error('Error fetching picture dates:', error);
@@ -36,16 +58,26 @@ export async function getPictureDatesForVehicle(vehicleId: number): Promise<{ da
   }
 
   // Get unique dates with driver names
-  const datesWithDrivers = (checkIns as CheckInWithDriver[])?.map((checkIn) => ({
-    date: new Date(checkIn.created_at).toISOString().split('T')[0],
-    driver_name: checkIn.driver ? 
+  const datesWithDrivers = (checkIns as CheckInWithDriver[])?.map((checkIn) => {
+    const driverName = checkIn.driver ? 
       `${checkIn.driver.first_name || ''} ${checkIn.driver.last_name || ''}`.trim() || 'Unknown Driver' 
-      : 'Unknown Driver'
-  })) || [];
+      : 'Unknown Driver';
+    return {
+      date: new Date(checkIn.created_at).toISOString().split('T')[0],
+      driver_name: driverName
+    };
+  }) || [];
+
+  // Filter by driver name if provided
+  const filteredDates = options?.driver
+    ? datesWithDrivers.filter(item => 
+        item.driver_name.toLowerCase().includes(options.driver!.toLowerCase())
+      )
+    : datesWithDrivers;
 
   // Remove duplicates while keeping the first occurrence (latest driver)
   const uniqueDatesWithDrivers = Array.from(
-    datesWithDrivers.reduce((map, item) => {
+    filteredDates.reduce((map, item) => {
       if (!map.has(item.date)) {
         map.set(item.date, item);
       }

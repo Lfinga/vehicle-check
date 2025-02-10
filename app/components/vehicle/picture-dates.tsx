@@ -1,8 +1,15 @@
 import { getPictureDatesForVehicle } from '@/server/services/pictures';
 import Link from 'next/link';
 
-export default async function PictureDates({ vehicleId }: { vehicleId: number }) {
-  const dates = await getPictureDatesForVehicle(vehicleId);
+interface PictureDatesProps {
+  vehicleId: number;
+  startDate?: string;
+  endDate?: string;
+  driver?: string;
+}
+
+export default async function PictureDates({ vehicleId, startDate, endDate, driver }: PictureDatesProps) {
+  const dates = await getPictureDatesForVehicle(vehicleId, { startDate, endDate, driver });
 
   if (dates.length === 0) {
     return <div className='text-gray-400 text-center py-4'>No pictures available for this vehicle</div>;

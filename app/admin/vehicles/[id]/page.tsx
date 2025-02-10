@@ -4,9 +4,16 @@ import PictureDates from '@/app/components/vehicle/picture-dates';
 import Link from 'next/link';
 import Image from 'next/image';
 import ChangeVehiclePicture from '@/app/components/admin/vehicles/change-vehicle-picture';
+import CheckInFilters from '@/app/components/vehicle/check-in-filters';
 
-export default async function VehiclePage({ params }: { params: Promise<{ id: string }> }) {
+interface PageProps {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ startDate?: string; endDate?: string; driver?: string }>;
+}
+
+export default async function VehiclePage({ params, searchParams }: PageProps) {
   const { id } = await params;
+  const { startDate, endDate, driver } = await searchParams;
   const vehicle = await getVehicleById(parseInt(id));
 
   if (!vehicle) {
@@ -15,7 +22,6 @@ export default async function VehiclePage({ params }: { params: Promise<{ id: st
 
   return (
     <div className='min-h-screen bg-[#111]'>
-
       <main className='p-4 lg:ml-64 lg:p-8'>
         <div className='mb-8'>
           <div className='flex items-center gap-4 mb-6'>
@@ -117,8 +123,9 @@ export default async function VehiclePage({ params }: { params: Promise<{ id: st
           </div>
 
           <div className='mb-8'>
-            <h2 className='text-xl font-bold text-white mb-4'>Picture Dates</h2>
-            <PictureDates vehicleId={vehicle.id} />
+            <h2 className='text-xl font-bold text-white mb-4'>Check-Ins Dates</h2>
+            <CheckInFilters />
+            <PictureDates vehicleId={vehicle.id} startDate={startDate} endDate={endDate} driver={driver} />
           </div>
 
           {/* <div>

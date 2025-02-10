@@ -8,7 +8,13 @@
 - For storage we use Supabase Storage buckets.
 - write code without useless comments, write self explanatory code.
 - please make sure to remove all unused code and files.
-- when using searchparams or params, make sure to use the correct type for the searchparams or params like show in this page https://nextjs.org/docs/app/api-reference/file-conventions/page.
+- when using searchparams or params, make sure to use the correct type for the searchparams or params like this example export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const filters = (await searchParams).filters
+}
 - when uploading a picture, make sure to upload it to the `vehicules_pictures` bucket and not to the `vehicles` table.
   
 
