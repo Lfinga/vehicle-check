@@ -1,8 +1,6 @@
-import { getUser } from '@/server/services/users';
-// import { redirect } from 'next/navigation';
-import VehicleCheckInForm from '../../components/new-check-in/vehicle-check-in-form';
+import VehicleCheckInForm from '../../../components/new-check-in/vehicle-check-in-form';
 import { getAllVehicles } from '@/server/services/vehicles';
-
+import { getUser } from '@/server/services/users';
 export default async function NewCheckIn() {
   const user = await getUser();
   const vehicles = await getAllVehicles();
@@ -12,7 +10,7 @@ export default async function NewCheckIn() {
       <main className='p-4 lg:ml-64 lg:p-8'>
         <div className='mb-8'>
           <h1 className='text-3xl font-bold text-white mb-6'>Driver Vehicle Check-In</h1>
-          <VehicleCheckInForm vehicles={vehicles} userId={user!.id} />
+          <VehicleCheckInForm vehicles={vehicles} userId={user!.id!} />
         </div>
       </main>
     </div>

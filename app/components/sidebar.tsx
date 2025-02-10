@@ -2,13 +2,19 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, FileText, Menu, X } from 'lucide-react';
+import { Home, FileText, Menu, X, Users, Car } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import LogoutButton from './logout-button';
-// import { getUser } from '@/server/services/users';
 
-export function Sidebar() {
-  // const user = getUser();
+type userData = {
+  email?: string | undefined;
+  first_name?: string | null | undefined;
+  id?: string | undefined;
+  is_admin?: boolean | undefined;
+  last_name?: string | null | undefined;
+};
+
+export function Sidebar({ user }: { user: userData | null }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -20,6 +26,8 @@ export function Sidebar() {
   const isActive = (path: string) => {
     return pathname === path ? 'bg-gray-800' : '';
   };
+
+  const isAdmin = user?.is_admin;
 
   return (
     <>
@@ -49,25 +57,71 @@ export function Sidebar() {
           </div>
 
           <nav className='space-y-2'>
-            <Link
-              href='/dashboard'
-              className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors ${isActive(
-                '/dashboard'
-              )}`}
-            >
-              <Home size={20} />
-              <span>Home</span>
-            </Link>
+            {isAdmin ? (
+              <>
+                <Link
+                  href='/admin/dashboard'
+                  className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors ${isActive(
+                    '/admin/dashboard'
+                  )}`}
+                >
+                  <Home size={20} />
+                  <span>Dashboard</span>
+                </Link>
 
-            <Link
-              href='/admin/vehicles'
-              className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors ${isActive(
-                '/admin/vehicles'
-              )}`}
-            >
-              <FileText size={20} />
-              <span>Vehicles</span>
-            </Link>
+                <Link
+                  href='/admin/vehicles'
+                  className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors ${isActive(
+                    '/admin/vehicles'
+                  )}`}
+                >
+                  <Car size={20} />
+                  <span>Vehicles</span>
+                </Link>
+
+                <Link
+                  href='/admin/drivers'
+                  className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors ${isActive(
+                    '/admin/drivers'
+                  )}`}
+                >
+                  <Users size={20} />
+                  <span>Drivers</span>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href='/driver/dashboard'
+                  className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors ${isActive(
+                    '/driver/dashboard'
+                  )}`}
+                >
+                  <Home size={20} />
+                  <span>Dashboard</span>
+                </Link>
+
+                <Link
+                  href='/driver/check-ins/new'
+                  className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors ${isActive(
+                    '/driver/new-check-in'
+                  )}`}
+                >
+                  <Car size={20} />
+                  <span>New Check-in</span>
+                </Link>
+
+                <Link
+                  href='/driver/check-ins'
+                  className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition-colors ${isActive(
+                    '/driver/check-ins'
+                  )}`}
+                >
+                  <FileText size={20} />
+                  <span>My Check-ins</span>
+                </Link>
+              </>
+            )}
           </nav>
 
           <div className='absolute bottom-4 right-4'>

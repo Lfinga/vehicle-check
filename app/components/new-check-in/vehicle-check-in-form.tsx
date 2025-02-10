@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { uploadVehicleImages } from '@/app/driver/new-check-in/action';
+import { uploadVehicleImages } from '@/app/driver/check-ins/new/action';
 import { useRouter } from 'next/navigation';
 
 const VEHICLE_ANGLES = [

@@ -1,7 +1,7 @@
 import './globals.css';
 import { Suspense } from 'react';
-import { Sidebar } from './components/sidebar';
-export default function RootLayout({
+import { SideBarWrapper } from './components/sideBarWrapper';
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -13,7 +13,7 @@ export default function RootLayout({
         <meta name='viewport' content='width=device-width, initial-scale=1' />
       </head>
       <body className='bg-[#111] min-h-screen'>
-        <Sidebar />
+        <SideBarWrapper />
         <Suspense fallback={null}>{children}</Suspense>
       </body>
     </html>
