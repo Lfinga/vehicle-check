@@ -5,16 +5,11 @@ import { usePathname } from 'next/navigation';
 import { Home, FileText, Menu, X, Users, Car } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import LogoutButton from './logout-button';
+import { Database } from '@/types/supabase';
 
-type userData = {
-  email?: string | undefined;
-  first_name?: string | null | undefined;
-  id?: string | undefined;
-  is_admin?: boolean | undefined;
-  last_name?: string | null | undefined;
-};
+type User = Database['public']['Tables']['users']['Row'];
 
-export function Sidebar({ user }: { user: userData | null }) {
+export function Sidebar({ user }: { user: User }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 

@@ -39,11 +39,11 @@ export async function getFilteredCheckIns(filters: CheckInFilters) {
   }
 
   if (filters.driverId) {
-    query = query.eq('user_id', filters.driverId)
+    query = query.eq('driver_id', filters.driverId)
   }
 
   if (filters.vehicleId) {
-    query = query.eq('vehicule_id', filters.vehicleId)
+    query = query.eq('vehicle_id', filters.vehicleId)
   }
 
   const { data, error } = await query
