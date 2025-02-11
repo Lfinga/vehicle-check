@@ -37,9 +37,9 @@ export async function signup(formData: FormData) {
     password: formData.get('password') as string,
     options: {
       data: {
-        first_name: formData.get('email')?.toString().split('@')[0] || '',
+        first_name: 'John',
         last_name: 'Doe',
-        is_admin: false,
+        is_admin: true,
       },
     },
   })
