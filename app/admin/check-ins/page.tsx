@@ -3,7 +3,7 @@ import { getAllVehicles } from '@/server/services/vehicles';
 import CheckInFilters from '@/app/components/admin/drivers/check-in-filters';
 import CheckInsList from '@/app/components/admin/drivers/check-ins-list';
 import WeekNavigation from '@/app/components/vehicle/week-navigation';
-import { startOfWeek, endOfWeek } from 'date-fns';
+import { startOfWeek, endOfWeek, startOfDay, endOfDay, parseISO } from 'date-fns';
 
 export default async function CheckInsPage({
   searchParams,
@@ -20,13 +20,17 @@ export default async function CheckInsPage({
   const vehicles = await getAllVehicles();
 
   // If no week is selected, use current week's dates
-  const effectiveStartDate =
+  const rawStartDate =
     startDate || weekStart || startOfWeek(new Date(), { weekStartsOn: 1 }).toISOString().split('T')[0];
-  const effectiveEndDate =
+  const rawEndDate =
     endDate ||
     (weekStart
       ? endOfWeek(new Date(weekStart), { weekStartsOn: 1 }).toISOString().split('T')[0]
       : endOfWeek(new Date(), { weekStartsOn: 1 }).toISOString().split('T')[0]);
+
+  // Set the effective dates to start of day and end of day to capture full days
+  const effectiveStartDate = startOfDay(parseISO(rawStartDate)).toISOString();
+  const effectiveEndDate = endOfDay(parseISO(rawEndDate)).toISOString();
 
   const checkIns = await getFilteredCheckIns({
     startDate: effectiveStartDate,
