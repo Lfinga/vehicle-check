@@ -3,6 +3,7 @@
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import { Database } from '@/types/supabase';
+import { usePathname } from 'next/navigation';
 
 type CheckIn = Database['public']['Tables']['check_ins']['Row'] & {
   vehicles: {
@@ -18,10 +19,13 @@ interface CheckInsListProps {
 }
 
 export default function CheckInsList({ checkIns }: CheckInsListProps) {
+  const pathname = usePathname();
+  const isDriverRoute = pathname.startsWith('/driver');
+
   if (checkIns.length === 0) {
     return (
       <div className='text-center py-12'>
-        <p className='text-gray-400'>No check-ins found for this driver.</p>
+        <p className='text-gray-400'>No check-ins found.</p>
       </div>
     );
   }
@@ -49,7 +53,10 @@ export default function CheckInsList({ checkIns }: CheckInsListProps) {
                 </div>
               )}
               <div className='mt-4'>
-                <Link href={`/admin/check-ins/${checkIn.id}`} className='text-blue-500 hover:text-blue-400'>
+                <Link
+                  href={isDriverRoute ? `/driver/check-ins/${checkIn.id}` : `/admin/check-ins/${checkIn.id}`}
+                  className='text-blue-500 hover:text-blue-400'
+                >
                   View Details →
                 </Link>
               </div>

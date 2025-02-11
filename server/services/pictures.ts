@@ -21,6 +21,23 @@ interface GetPictureDatesOptions {
   driver?: string;
 }
 
+export async function getPicturesByCheckInId(checkInId: number): Promise<Picture[]> {
+  const supabase = await createClient();
+
+  const { data: pictures, error } = await supabase
+    .from('pictures')
+    .select('*')
+    .eq('check_in_id', checkInId)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching pictures:', error);
+    return [];
+  }
+
+  return pictures || [];
+}
+
 export async function getPictureDatesForVehicle(
   vehicleId: number,
   options?: GetPictureDatesOptions
