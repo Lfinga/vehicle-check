@@ -1,10 +1,12 @@
 import { getFilteredCheckIns } from '@/server/services/check_ins';
 import CheckInsList from '@/app/components/admin/drivers/check-ins-list';
 import CheckInFilters from '@/app/components/admin/drivers/check-in-filters';
+import WeekNavigation from '@/app/components/vehicle/week-navigation';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/server/supabase/server';
 import { getAllVehicles } from '@/server/services/vehicles';
 import Link from 'next/link';
+import { startOfWeek, endOfWeek } from 'date-fns';
 
 export default async function DriverPage({
   params,
@@ -14,10 +16,11 @@ export default async function DriverPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { id } = await params;
-  const { startDate, endDate, vehicleId } = (await searchParams) as {
+  const { startDate, endDate, vehicleId, weekStart } = (await searchParams) as {
     startDate?: string;
     endDate?: string;
     vehicleId?: string;
+    weekStart?: string;
   };
 
   const supabase = await createClient();
@@ -29,10 +32,19 @@ export default async function DriverPage({
     notFound();
   }
 
+  // If no week is selected, use current week's dates
+  const effectiveStartDate =
+    startDate || weekStart || startOfWeek(new Date(), { weekStartsOn: 1 }).toISOString().split('T')[0];
+  const effectiveEndDate =
+    endDate ||
+    (weekStart
+      ? endOfWeek(new Date(weekStart), { weekStartsOn: 1 }).toISOString().split('T')[0]
+      : endOfWeek(new Date(), { weekStartsOn: 1 }).toISOString().split('T')[0]);
+
   const checkIns = await getFilteredCheckIns({
     driverId: id,
-    startDate,
-    endDate,
+    startDate: effectiveStartDate,
+    endDate: effectiveEndDate,
     vehicleId: vehicleId ? parseInt(vehicleId) : undefined,
   });
 
@@ -66,6 +78,7 @@ export default async function DriverPage({
 
         <div className='mb-8'>
           <h2 className='text-xl font-semibold text-white mb-6'>Check-ins History</h2>
+          <WeekNavigation />
           <CheckInFilters vehicles={vehicles} />
           <CheckInsList checkIns={checkIns} />
         </div>
