@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { uploadVehicleImages } from '@/app/driver/check-ins/new/action';
 import { useRouter } from 'next/navigation';
+import imageCompression from 'browser-image-compression';
 
 const VEHICLE_ANGLES = [
   { id: 'front-right', label: 'Front Right' },
@@ -37,7 +38,7 @@ export default function VehicleCheckInForm({ vehicles, userId }: Props) {
     return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   });
 
-  const onImageUploadChange = (angleId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+  const onImageUploadChange = async (angleId: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const fileInput = e.target;
 
     if (!fileInput.files || fileInput.files.length === 0) {
@@ -49,15 +50,30 @@ export default function VehicleCheckInForm({ vehicles, userId }: Props) {
       return;
     }
 
-    setImageFiles((prev) => ({
-      ...prev,
-      [angleId]: file,
-    }));
+    try {
+      // Compress image before storing
+      const options = {
+        maxSizeMB: 0.5,
+        maxWidthOrHeight: 1280,
+        useWebWorker: true,
+        initialQuality: 0.8,
+      };
 
-    setImages((prev) => ({
-      ...prev,
-      [angleId]: URL.createObjectURL(file),
-    }));
+      const compressedFile = await imageCompression(file, options);
+
+      setImageFiles((prev) => ({
+        ...prev,
+        [angleId]: compressedFile,
+      }));
+
+      setImages((prev) => ({
+        ...prev,
+        [angleId]: URL.createObjectURL(compressedFile),
+      }));
+    } catch (error) {
+      console.error('Error compressing image:', error);
+      alert('Failed to process image. Please try again with a different image.');
+    }
 
     // Reset the input so the same file can be selected again if needed
     e.target.value = '';

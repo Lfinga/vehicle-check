@@ -17,6 +17,7 @@
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.47.12",
     "@types/react-datepicker": "^7.0.0",
+    "browser-image-compression": "^2.0.2",
     "lucide-react": "^0.471.0",
     "next": "15.1.4",
     "react": "^19.0.0",
